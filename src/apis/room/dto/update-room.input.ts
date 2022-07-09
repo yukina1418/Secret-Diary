@@ -1,5 +1,5 @@
-import { CreateRoomInput } from './create-room.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { CreateRoomInput } from "./create-room.intput";
+import { InputType, Field, Int, PartialType } from "@nestjs/graphql";
 
 @InputType()
 export class UpdateRoomInput extends PartialType(CreateRoomInput) {

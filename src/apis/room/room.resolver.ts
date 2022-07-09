@@ -1,10 +1,36 @@
 import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
 import { RoomService } from "./room.service";
 import { Room } from "./entities/room.entity";
-import { CreateRoomInput } from "./dto/create-room.input";
+import { CreateRoomInput } from "./dto/create-room.intput";
 import { UpdateRoomInput } from "./dto/update-room.input";
 
 @Resolver(() => Room)
 export class RoomResolver {
   constructor(private readonly roomService: RoomService) {}
+
+  @Mutation(() => String)
+  joinRoom(
+    //
+    @Args("joinCode") joinCode: string,
+    @Args("password") password: string
+  ) {
+    return this.roomService.joinRoom({ joinCode, password });
+  }
+
+  @Mutation(() => Room)
+  createRoom(
+    //
+    @Args("createRoomInput") createRoomInput: CreateRoomInput
+  ) {
+    return this.roomService.create({ createRoomInput });
+  }
+
+  @Mutation(() => String)
+  createRoomJoinCode(
+    //
+    @Args("name") name: string,
+    @Args("adminPassword") adminPassword: string
+  ) {
+    return this.roomService.createJoinCode({ name, adminPassword });
+  }
 }

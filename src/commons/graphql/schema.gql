@@ -2,6 +2,92 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Room {
+  id: String!
+  name: String!
+  image: String!
+  userCount: Int!
+  hit: Int!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type DiaryLike {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Comment {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Diary {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
-  fetchUser: String!
+  diaryLike(id: Int!): DiaryLike!
+  comment(id: Int!): Comment!
+  diary(id: Int!): Diary!
+}
+
+type Mutation {
+  joinRoom(joinCode: String!, password: String!): String!
+  createRoom(createRoomInput: CreateRoomInput!): Room!
+  createRoomJoinCode(name: String!, adminPassword: String!): String!
+  createDiaryLike(createDiaryLikeInput: CreateDiaryLikeInput!): DiaryLike!
+  updateDiaryLike(updateDiaryLikeInput: UpdateDiaryLikeInput!): DiaryLike!
+  removeDiaryLike(id: Int!): DiaryLike!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
+  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
+  removeComment(id: Int!): Comment!
+  createDiary(createDiaryInput: CreateDiaryInput!): Diary!
+  updateDiary(updateDiaryInput: UpdateDiaryInput!): Diary!
+  removeDiary(id: Int!): Diary!
+}
+
+input CreateRoomInput {
+  name: String!
+  password: String!
+  adminPassword: String!
+}
+
+input CreateDiaryLikeInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateDiaryLikeInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateDiaryInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateDiaryInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }

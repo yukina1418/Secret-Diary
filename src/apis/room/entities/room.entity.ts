@@ -1,5 +1,6 @@
 import { ObjectType, Field, Int } from "@nestjs/graphql";
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -10,7 +11,7 @@ import {
 
 @ObjectType()
 @Entity()
-export class Room {
+export class Room extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   @Field(() => String)
   id: string;
@@ -21,6 +22,21 @@ export class Room {
 
   @Column()
   password: string;
+
+  @Column()
+  adminPassword: string;
+
+  @Column({ nullable: true })
+  @Field(() => String)
+  image?: string;
+
+  @Column({ default: 0 })
+  @Field(() => Int)
+  userCount: number;
+
+  @Column({ default: 0 })
+  @Field(() => Int)
+  hit: number;
 
   @CreateDateColumn()
   @Field(() => Date)
