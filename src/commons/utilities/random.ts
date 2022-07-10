@@ -7,3 +7,5 @@ export function random() {
 
   return uuid();
 }
+
+random();

@@ -3,13 +3,13 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
-} from "@nestjs/common";
-import { Cache } from "cache-manager";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Room } from "./entities/room.entity";
-import * as bcrypt from "bcrypt";
-import { random } from "src/commons/utilities/random";
+} from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Room } from './entities/room.entity';
+import * as bcrypt from 'bcrypt';
+import { random } from 'src/commons/utilities/random';
 
 @Injectable()
 export class RoomService {
@@ -17,7 +17,7 @@ export class RoomService {
     @InjectRepository(Room)
     private readonly roomRepository: Repository<Room>,
     @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache
+    private readonly cacheManager: Cache,
   ) {}
 
   // 에러핸들링 고민해보기, 실배포까지 갈꺼니까 더 고민하기
@@ -32,7 +32,7 @@ export class RoomService {
 
       if (!isPassword)
         throw new UnauthorizedException(
-          "초대코드가 존재하지 않거나 만료되었습니다."
+          '초대코드가 존재하지 않거나 만료되었습니다.',
         );
 
       return isRoom.id;
@@ -61,11 +61,11 @@ export class RoomService {
       const isRoom = await this.roomRepository.findOne({ where: { url } });
       const isPassword = bcrypt.compareSync(
         adminPassword,
-        isRoom.adminPassword
+        isRoom.adminPassword,
       );
       if (!isPassword)
         throw new UnauthorizedException(
-          "룸이 존재하지 않거나, 관리자 비밀번호가 틀립니다."
+          '룸이 존재하지 않거나, 관리자 비밀번호가 틀립니다.',
         );
 
       // 8자리 난수 생성기
@@ -87,7 +87,7 @@ export class RoomService {
     });
     const isPassword = bcrypt.compareSync(
       adminRoomInput.adminPassword,
-      isRoom.adminPassword
+      isRoom.adminPassword,
     );
 
     if (isPassword) {

@@ -1,13 +1,13 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { Room } from "../entities/room.entity";
-import { Repository } from "typeorm";
-import { RoomService } from "../room.service";
-import { random } from "../../../commons/utilities/random";
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Room } from '../entities/room.entity';
+import { Repository } from 'typeorm';
+import { RoomService } from '../room.service';
 import {
+  CacheModule,
   ConflictException,
   UnprocessableEntityException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
@@ -19,12 +19,13 @@ const mockRepository = () => ({
   find: jest.fn(),
 });
 
-describe("RoomService", () => {
+describe('RoomService', () => {
   let roomService: RoomService;
   let roomRepository: MockRepository<Room>;
 
   beforeEach(async () => {
     const modules: TestingModule = await Test.createTestingModule({
+      imports: [CacheModule.register({})],
       providers: [
         RoomService,
         {
@@ -37,27 +38,29 @@ describe("RoomService", () => {
     roomService = modules.get<RoomService>(RoomService);
     roomRepository = modules.get(getRepositoryToken(Room));
   });
-  it("Define QnAServiceTest", () => {
+  it('Define RoomServiceTest', () => {
     expect(roomService).toBeDefined();
     expect(roomRepository).toBeDefined();
   });
 
-  describe("QnAService - create", () => {
-    it("create - url does not exist", async () => {
-      const roomRepositorySpyFindOne = jest.spyOn(roomRepository, "findOne");
-      roomRepository.findOne.mockResolvedValue("");
+  // jest에 대한 공부가 필요함. 잠깐 멈춰놓자...
+
+  describe('RoomService - create', () => {
+    it('create - url does not exist', async () => {
+      const roomRepositorySpyFindOne = jest.spyOn(roomRepository, 'findOne');
+      roomRepository.findOne.mockResolvedValue('');
       try {
-        await roomRepository.findOne({ where: { url: "url.com" } });
+        await roomRepository.findOne({ where: { url: 'url.com' } });
       } catch (err) {
         expect(err).toBeInstanceOf(ConflictException);
       }
       expect(roomRepositorySpyFindOne).toBeCalledTimes(1);
     });
-    it("create - save failed", async () => {
-      const roomRepositorySpySave = jest.spyOn(roomRepository, "save");
-      roomRepository.save.mockResolvedValue("");
+    it('create - save failed', async () => {
+      const roomRepositorySpySave = jest.spyOn(roomRepository, 'save');
+      roomRepository.save.mockResolvedValue('');
       try {
-        await roomRepository.findOne({ where: { url: "url.com" } });
+        await roomRepository.findOne({ where: { url: 'url.com' } });
       } catch (err) {
         expect(err).toBeInstanceOf(UnprocessableEntityException);
       }
