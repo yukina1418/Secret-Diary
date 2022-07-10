@@ -41,7 +41,9 @@ type Query {
 type Mutation {
   joinRoom(joinCode: String!, password: String!): String!
   createRoom(createRoomInput: CreateRoomInput!): Room!
-  createRoomJoinCode(name: String!, adminPassword: String!): String!
+  createRoomJoinCode(adminRoomInput: AdminRoomInput!): String!
+  updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room!
+  deleteRoom(adminRoomInput: AdminRoomInput!): Boolean!
   createDiaryLike(createDiaryLikeInput: CreateDiaryLikeInput!): DiaryLike!
   updateDiaryLike(updateDiaryLikeInput: UpdateDiaryLikeInput!): DiaryLike!
   removeDiaryLike(id: Int!): DiaryLike!
@@ -57,6 +59,18 @@ input CreateRoomInput {
   name: String!
   password: String!
   adminPassword: String!
+}
+
+input AdminRoomInput {
+  url: String!
+  adminPassword: String!
+}
+
+input UpdateRoomInput {
+  name: String
+  password: String
+  adminPassword: String
+  image: String
 }
 
 input CreateDiaryLikeInput {

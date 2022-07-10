@@ -3,6 +3,7 @@ import { RoomService } from "./room.service";
 import { Room } from "./entities/room.entity";
 import { CreateRoomInput } from "./dto/create-room.intput";
 import { UpdateRoomInput } from "./dto/update-room.input";
+import { AdminRoomInput } from "./dto/admin-room.input";
 
 @Resolver(() => Room)
 export class RoomResolver {
@@ -28,9 +29,24 @@ export class RoomResolver {
   @Mutation(() => String)
   createRoomJoinCode(
     //
-    @Args("name") name: string,
-    @Args("adminPassword") adminPassword: string
+    @Args("adminRoomInput") adminRoomInput: AdminRoomInput
   ) {
-    return this.roomService.createJoinCode({ name, adminPassword });
+    return this.roomService.createJoinCode({ adminRoomInput });
+  }
+
+  @Mutation(() => Room)
+  updateRoom(
+    @Args("adminRoomInput") adminRoomInput: AdminRoomInput,
+    @Args("updateRoomInput") updateRoomInput: UpdateRoomInput
+  ) {
+    return this.roomService.update({ adminRoomInput, updateRoomInput });
+  }
+
+  @Mutation(() => Boolean)
+  deleteRoom(
+    //
+    @Args("adminRoomInput") adminRoomInput: AdminRoomInput
+  ) {
+    return this.roomService.delete({ adminRoomInput });
   }
 }
