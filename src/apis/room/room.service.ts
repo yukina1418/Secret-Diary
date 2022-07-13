@@ -27,17 +27,23 @@ export class RoomService {
     try {
       // 검증단
       const result = await this.cacheManager.get(joinCode);
+      if (!result)
+        throw new UnauthorizedException(
+          '초대코드가 존재하지 않거나 만료되었습니다.',
+        );
+
       const isRoom = await this.roomRepository.findOne(result);
       const isPassword = bcrypt.compareSync(password, isRoom.password);
 
       if (!isPassword)
         throw new UnauthorizedException(
-          '초대코드가 존재하지 않거나 만료되었습니다.',
+          '해당 룸 비밀번호와 일치하지 않습니다.',
         );
 
       return isRoom.id;
     } catch (e) {
       // 에러를 어떻게 예쁘게 처리하지
+      throw new Error('Room Join Syntax Error');
     }
   }
 
@@ -74,7 +80,7 @@ export class RoomService {
 
       return uuid;
     } catch (e) {
-      // 에러핸들링하기
+      throw new Error('RoomCode Create Syntax Error');
     }
   }
 
@@ -108,14 +114,18 @@ export class RoomService {
   // 룸 삭제
   async delete({ adminRoomInput }) {
     const { url, adminPassword } = adminRoomInput;
-    const isRoom = await this.roomRepository.findOne({ where: { id: url } });
-    const isPassword = bcrypt.compareSync(adminPassword, isRoom.adminPassword);
-
+    const isPassword = this.isAdmin({ url, adminPassword });
     if (isPassword) {
       await this.roomRepository.softDelete(url);
       return true;
     } else {
       return false;
     }
+  }
+
+  async isAdmin({ url, adminPassword }) {
+    const isRoom = await this.roomRepository.findOne({ where: { id: url } });
+    const isPassword = bcrypt.compareSync(adminPassword, isRoom.adminPassword);
+    return isPassword;
   }
 }
