@@ -1,18 +1,20 @@
-import { ObjectType, Field, Int } from "@nestjs/graphql";
+import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { Diary } from 'src/apis/diary/entities/diary.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
 @ObjectType()
 @Entity()
 export class Room extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
 
@@ -37,6 +39,10 @@ export class Room extends BaseEntity {
   @Column({ default: 0 })
   @Field(() => Int)
   hit: number;
+
+  @OneToMany(() => Diary, (diary) => diary.room)
+  @Field(() => [Diary])
+  diaries: Diary[];
 
   @CreateDateColumn()
   @Field(() => Date)
