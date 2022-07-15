@@ -1,7 +1,19 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
 export class CreateDiaryInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field(() => String)
+  account: string;
+
+  @Field(() => String)
+  password: string;
+
+  @Field(() => String)
+  contents: string;
+
+  @Field(() => String, { nullable: true })
+  image: string;
+
+  @Field(() => String)
+  room: string;
 }

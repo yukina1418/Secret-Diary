@@ -3,6 +3,6 @@ import { DiaryService } from './diary.service';
 import { DiaryResolver } from './diary.resolver';
 
 @Module({
-  providers: [DiaryResolver, DiaryService]
+  providers: [DiaryResolver, DiaryService],
 })
 export class DiaryModule {}
