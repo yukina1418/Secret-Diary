@@ -11,8 +11,8 @@ export class CreateDiaryInput {
   @Field(() => String)
   contents: string;
 
-  @Field(() => String, { nullable: true })
-  image: string;
+  // @Field(() => String, { nullable: true })
+  // image: string;
 
   @Field(() => String)
   room: string;

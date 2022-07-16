@@ -8,28 +8,35 @@ import { UpdateDiaryInput } from './dto/update-diary.input';
 export class DiaryResolver {
   constructor(private readonly diaryService: DiaryService) {}
 
+  @Query(() => Diary)
+  fetchDiary(
+    //
+    @Args('id') id: string,
+  ) {
+    return this.diaryService.findOne({ id });
+  }
+
+  @Query(() => [Diary])
+  fetchAllDiaries(
+    //
+    @Args('room') room: string,
+  ) {
+    return this.diaryService.findAll({ room });
+  }
+
   @Mutation(() => Diary)
-  createDiary(@Args('createDiaryInput') createDiaryInput: CreateDiaryInput) {
+  createDiary(
+    //
+    @Args('createDiaryInput') createDiaryInput: CreateDiaryInput,
+  ) {
     return this.diaryService.create(createDiaryInput);
   }
 
-  @Query(() => [Diary], { name: 'diary' })
-  findAll() {
-    return this.diaryService.findAll();
-  }
-
-  @Query(() => Diary, { name: 'diary' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.diaryService.findOne(id);
-  }
-
   @Mutation(() => Diary)
-  updateDiary(@Args('updateDiaryInput') updateDiaryInput: UpdateDiaryInput) {
-    return this.diaryService.update(updateDiaryInput.id, updateDiaryInput);
-  }
-
-  @Mutation(() => Diary)
-  removeDiary(@Args('id', { type: () => Int }) id: number) {
-    return this.diaryService.remove(id);
+  updateDiary(
+    //
+    @Args('updateDiaryInput') updateDiaryInput: UpdateDiaryInput,
+  ) {
+    return this.diaryService.update({ updateDiaryInput });
   }
 }

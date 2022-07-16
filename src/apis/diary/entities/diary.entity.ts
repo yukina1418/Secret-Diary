@@ -1,16 +1,19 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Room } from 'src/apis/room/entities/room.entity';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
+  Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @ObjectType()
-export class Diary {
+@Entity()
+export class Diary extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
@@ -26,9 +29,9 @@ export class Diary {
   @Field(() => String)
   contents: string;
 
-  @Column({ nullable: true })
-  @Field(() => String)
-  image?: string;
+  // @Column({ nullable: true })
+  // @Field(() => String)
+  // image?: string;
 
   @ManyToOne(() => Room, (room) => room.diaries)
   @Field(() => Room)
