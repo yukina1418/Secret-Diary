@@ -9,6 +9,9 @@ export class CreateDiaryInput {
   password: string;
 
   @Field(() => String)
+  title: string;
+
+  @Field(() => String)
   contents: string;
 
   // @Field(() => String, { nullable: true })

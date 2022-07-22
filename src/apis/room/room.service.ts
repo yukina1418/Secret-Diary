@@ -40,6 +40,9 @@ export class RoomService {
           '해당 룸 비밀번호와 일치하지 않습니다.',
         );
 
+      // 검증로직 추가해야함
+      // URL로 바로 못들어오게 혹은 들어온다면 비밀번호를 작성하는 창으로 보내야할듯
+
       return isRoom.id;
     } catch (e) {
       // 에러를 어떻게 예쁘게 처리하지
@@ -61,14 +64,16 @@ export class RoomService {
 
   // 초대코드 생성
   async createJoinCode({ adminRoomInput }) {
-    const { url, adminPassword } = adminRoomInput;
+    const { id, adminPassword } = adminRoomInput;
     try {
       // 검증단
-      const isRoom = await this.roomRepository.findOne({ where: { url } });
+
+      const isRoom = await this.roomRepository.findOne({ where: { id } });
       const isPassword = bcrypt.compareSync(
         adminPassword,
         isRoom.adminPassword,
       );
+
       if (!isPassword)
         throw new UnauthorizedException(
           '룸이 존재하지 않거나, 관리자 비밀번호가 틀립니다.',

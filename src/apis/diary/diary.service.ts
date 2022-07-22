@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 import { Room } from '../room/entities/room.entity';
-import { CreateDiaryInput } from './dto/create-diary.input';
-import { UpdateDiaryInput } from './dto/update-diary.input';
 import { Diary } from './entities/diary.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -13,7 +11,7 @@ export class DiaryService {
     @InjectRepository(Diary)
     private readonly diaryRepository: Repository<Diary>,
   ) {}
-  async create(createDiaryInput: CreateDiaryInput) {
+  async create({ createDiaryInput }) {
     try {
       const { password, room, ...data } = createDiaryInput;
 
@@ -46,6 +44,8 @@ export class DiaryService {
       .where({ room })
       .getMany();
 
+    //const diariesData = await this.diaryRepository.find({ where: { room } });
+
     if (diariesData.length === 0) throw new Error('Diary Not Found');
 
     return diariesData;
@@ -64,11 +64,45 @@ export class DiaryService {
     return diaryData;
   }
 
-  update(updateDiaryInput) {
-    return;
+  async update({ updateDiaryInput }) {
+    const { id, password, room, ...data } = updateDiaryInput;
+
+    const isDiary = await getConnection()
+      .createQueryBuilder()
+      .select('diary')
+      .from(Diary, 'diary')
+      .leftJoinAndSelect('diary.room', 'room')
+      .where({ id })
+      .andWhere({ room })
+      .getOne();
+
+    if (!isDiary) throw new Error('Diary Id Not Found');
+
+    const isPassword = bcrypt.compareSync(password, isDiary.password);
+
+    if (!isPassword) throw new Error('Diary Password Not Match');
+
+    const diaryData = await this.diaryRepository.save({ ...isDiary, ...data });
+
+    return diaryData;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} diary`;
+  async remove({ deleteDiaryInput }) {
+    const { id, password, room } = deleteDiaryInput;
+
+    const isDiary = await this.diaryRepository.findOne({
+      where: { id, room },
+      relations: ['room'],
+    });
+
+    if (!isDiary) throw new Error('Diary Id Not Found');
+
+    const isPassword = bcrypt.compareSync(password, isDiary.password);
+
+    if (!isPassword) throw new Error('Diary Password Not Match');
+
+    await this.diaryRepository.softDelete({ id, room });
+
+    return true;
   }
 }

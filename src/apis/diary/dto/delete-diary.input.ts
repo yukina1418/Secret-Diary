@@ -1,13 +1,13 @@
 import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
-export class CreateRoomInput {
+export class DeleteDiaryInput {
   @Field(() => String)
-  name: string;
+  room: string;
+
+  @Field(() => String)
+  id: string;
 
   @Field(() => String)
   password: string;
-
-  @Field(() => String)
-  adminPassword: string;
 }

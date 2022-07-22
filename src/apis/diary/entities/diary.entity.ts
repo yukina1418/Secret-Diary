@@ -14,7 +14,7 @@ import {
 @ObjectType()
 @Entity()
 export class Diary extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment')
   @Field(() => String)
   id: string;
 
@@ -24,6 +24,10 @@ export class Diary extends BaseEntity {
 
   @Column()
   password: string;
+
+  @Column()
+  @Field(() => String)
+  title: string;
 
   @Column({ type: 'text' })
   @Field(() => String)

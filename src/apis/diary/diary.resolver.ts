@@ -1,8 +1,9 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { DiaryService } from './diary.service';
 import { Diary } from './entities/diary.entity';
 import { CreateDiaryInput } from './dto/create-diary.input';
 import { UpdateDiaryInput } from './dto/update-diary.input';
+import { DeleteDiaryInput } from './dto/delete-diary.input';
 
 @Resolver(() => Diary)
 export class DiaryResolver {
@@ -29,7 +30,7 @@ export class DiaryResolver {
     //
     @Args('createDiaryInput') createDiaryInput: CreateDiaryInput,
   ) {
-    return this.diaryService.create(createDiaryInput);
+    return this.diaryService.create({ createDiaryInput });
   }
 
   @Mutation(() => Diary)
@@ -38,5 +39,10 @@ export class DiaryResolver {
     @Args('updateDiaryInput') updateDiaryInput: UpdateDiaryInput,
   ) {
     return this.diaryService.update({ updateDiaryInput });
+  }
+
+  @Mutation(() => Boolean)
+  deleteDiary(@Args('deleteDiaryInput') deleteDiaryInput: DeleteDiaryInput) {
+    return this.diaryService.remove({ deleteDiaryInput });
   }
 }

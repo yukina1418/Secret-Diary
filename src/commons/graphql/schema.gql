@@ -5,6 +5,7 @@
 type Diary {
   id: String!
   account: String!
+  title: String!
   contents: String!
   room: Room!
   createAt: DateTime!
@@ -49,6 +50,7 @@ type Mutation {
   removeComment(id: Int!): Comment!
   createDiary(createDiaryInput: CreateDiaryInput!): Diary!
   updateDiary(updateDiaryInput: UpdateDiaryInput!): Diary!
+  deleteDiary(deleteDiaryInput: DeleteDiaryInput!): Boolean!
 }
 
 input CreateRoomInput {
@@ -58,7 +60,7 @@ input CreateRoomInput {
 }
 
 input AdminRoomInput {
-  url: String!
+  id: String!
   adminPassword: String!
 }
 
@@ -83,14 +85,22 @@ input UpdateCommentInput {
 input CreateDiaryInput {
   account: String!
   password: String!
+  title: String!
   contents: String!
   room: String!
 }
 
 input UpdateDiaryInput {
   account: String
-  password: String
+  password: String!
+  title: String
   contents: String
-  room: String
+  room: String!
   id: String!
+}
+
+input DeleteDiaryInput {
+  room: String!
+  id: String!
+  password: String!
 }
