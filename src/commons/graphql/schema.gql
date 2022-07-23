@@ -3,6 +3,7 @@
 # ------------------------------------------------------
 
 type Comment {
+  id: String!
   account: String!
   contents: String!
   diary: Diary!
@@ -37,23 +38,22 @@ type Room {
 }
 
 type Query {
-  fetchComments: [Comment!]!
-  fetchDiary(id: String!): Diary!
-  fetchDiaries(room: String!): [Diary!]!
+  fetchRoomCount: Int
+  fetchComments(diary: String!): [Comment!]
+  fetchDiary(id: String!): Diary
+  fetchDiaries(room: String!): [Diary!]
 }
 
 type Mutation {
-  joinRoom(joinCode: String!, password: String!): String!
-  createRoom(createRoomInput: CreateRoomInput!): Room!
-  createRoomJoinCode(adminRoomInput: AdminRoomInput!): String!
-  updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room!
-  deleteRoom(adminRoomInput: AdminRoomInput!): Boolean!
-  createComment(createCommentInput: CreateCommentInput!): Comment!
-  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
-  deleteComment(id: Int!): Comment!
-  createDiary(createDiaryInput: CreateDiaryInput!): Diary!
-  updateDiary(updateDiaryInput: UpdateDiaryInput!): Diary
-  deleteDiary(deleteDiaryInput: DeleteDiaryInput!): Boolean!
+  joinRoom(joinCode: String!, password: String!): String
+  createRoom(createRoomInput: CreateRoomInput!): Room
+  createRoomJoinCode(adminRoomInput: AdminRoomInput!): String
+  updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room
+  deleteRoom(adminRoomInput: AdminRoomInput!): Boolean
+  createComment(createCommentInput: CreateCommentInput!): Comment
+  createDiary(account: String!, password: String!, title: String!, contents: String!, room: String!): Diary
+  updateDiary(account: String, password: String!, title: String, contents: String, room: String!, id: String!): Diary
+  deleteDiary(room: String!, id: String!, password: String!): Boolean
 }
 
 input CreateRoomInput {
@@ -69,8 +69,8 @@ input AdminRoomInput {
 
 input UpdateRoomInput {
   name: String
-  password: String
-  adminPassword: String
+  changePassword: String
+  changeAdminPassword: String
   image: String
 }
 
@@ -80,36 +80,4 @@ input CreateCommentInput {
   account: String!
   password: String!
   contents: String!
-}
-
-input UpdateCommentInput {
-  room: String
-  diary: String
-  account: String
-  password: String
-  contents: String
-  id: Int!
-}
-
-input CreateDiaryInput {
-  account: String!
-  password: String!
-  title: String!
-  contents: String!
-  room: String!
-}
-
-input UpdateDiaryInput {
-  account: String
-  password: String!
-  title: String
-  contents: String
-  room: String!
-  id: String!
-}
-
-input DeleteDiaryInput {
-  room: String!
-  id: String!
-  password: String!
 }

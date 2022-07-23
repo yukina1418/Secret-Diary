@@ -1,19 +1,25 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { IsString } from 'class-validator';
 
 @InputType()
 export class CreateCommentInput {
+  @IsString()
   @Field(() => String)
-  room: string;
+  readonly room: string;
 
+  @IsString()
   @Field(() => String)
-  diary: string;
+  readonly diary: string;
 
+  @IsString()
   @Field(() => String)
-  account: string;
+  readonly account: string;
 
+  @IsString()
   @Field(() => String)
-  password: string;
+  readonly password: string;
 
+  @IsString()
   @Field(() => String)
-  contents: string;
+  readonly contents: string;
 }
