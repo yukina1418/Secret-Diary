@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query, Int } from '@nestjs/graphql';
 import { RoomService } from './room.service';
 import { Room } from './entities/room.entity';
 import { CreateRoomInput } from './dto/create-room.intput';
@@ -8,6 +8,11 @@ import { AdminRoomInput } from './dto/admin-room.input';
 @Resolver(() => Room)
 export class RoomResolver {
   constructor(private readonly roomService: RoomService) {}
+
+  @Query(() => Int)
+  fetchRoomCount() {
+    return this.roomService.count();
+  }
 
   @Mutation(() => String, { nullable: true })
   joinRoom(
@@ -44,7 +49,6 @@ export class RoomResolver {
 
   @Mutation(() => Boolean, { nullable: true })
   deleteRoom(
-    //
     @Args('adminRoomInput') adminRoomInput: AdminRoomInput,
   ): Promise<boolean> {
     return this.roomService.delete(adminRoomInput);

@@ -3,17 +3,19 @@ import { CommentService } from './comment.service';
 import { Comment } from './entities/comment.entity';
 import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
+import { UseGuards } from '@nestjs/common';
 
-@Resolver(() => Comment)
+@UseGuards()
+@Resolver()
 export class CommentResolver {
   constructor(private readonly commentService: CommentService) {}
 
-  @Mutation(() => Comment)
+  @Mutation(() => Comment, { nullable: true })
   createComment(
     //
     @Args('createCommentInput') createCommentInput: CreateCommentInput,
-  ) {
-    return this.commentService.create({ createCommentInput });
+  ): Promise<Comment> {
+    return this.commentService.create(createCommentInput);
   }
 
   @Query(() => [Comment])

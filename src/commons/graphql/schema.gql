@@ -37,21 +37,22 @@ type Room {
 }
 
 type Query {
+  fetchRoomCount: Int!
   fetchComments: [Comment!]!
   fetchDiary(id: String!): Diary!
   fetchDiaries(room: String!): [Diary!]!
 }
 
 type Mutation {
-  joinRoom(joinCode: String!, password: String!): String!
-  createRoom(createRoomInput: CreateRoomInput!): Room!
-  createRoomJoinCode(adminRoomInput: AdminRoomInput!): String!
-  updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room!
-  deleteRoom(adminRoomInput: AdminRoomInput!): Boolean!
-  createComment(createCommentInput: CreateCommentInput!): Comment!
+  joinRoom(joinCode: String!, password: String!): String
+  createRoom(createRoomInput: CreateRoomInput!): Room
+  createRoomJoinCode(adminRoomInput: AdminRoomInput!): String
+  updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room
+  deleteRoom(adminRoomInput: AdminRoomInput!): Boolean
+  createComment(createCommentInput: CreateCommentInput!): Comment
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   deleteComment(id: Int!): Comment!
-  createDiary(createDiaryInput: CreateDiaryInput!): Diary!
+  createDiary(createDiaryInput: CreateDiaryInput!): Diary
   updateDiary(updateDiaryInput: UpdateDiaryInput!): Diary
   deleteDiary(deleteDiaryInput: DeleteDiaryInput!): Boolean!
 }
@@ -69,8 +70,8 @@ input AdminRoomInput {
 
 input UpdateRoomInput {
   name: String
-  password: String
-  adminPassword: String
+  changePassword: String
+  changeAdminPassword: String
   image: String
 }
 

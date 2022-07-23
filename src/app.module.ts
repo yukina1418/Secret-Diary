@@ -3,7 +3,9 @@ import {
   MiddlewareConsumer,
   Module,
   NestModule,
+  ValidationPipe,
 } from '@nestjs/common';
+import { APP_PIPE } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -51,7 +53,14 @@ import { graphqlUploadExpress } from 'graphql-upload';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      //
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   constructor(private readonly connection: Connection) {}

@@ -1,8 +1,16 @@
-import { CreateRoomInput } from './create-room.intput';
-import { InputType, Field, PartialType } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateRoomInput extends PartialType(CreateRoomInput) {
+export class UpdateRoomInput {
+  @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  changePassword: string;
+
+  @Field(() => String, { nullable: true })
+  changeAdminPassword: string;
+
   @Field(() => String, { nullable: true })
   image: string;
 }
