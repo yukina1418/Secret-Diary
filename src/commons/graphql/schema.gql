@@ -2,14 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Room {
-  id: String!
-  name: String!
-  image: String!
-  userCount: Int!
-  hit: Int!
+type Comment {
+  account: String!
+  contents: String!
+  diary: Diary!
   createAt: DateTime!
-  updateAt: DateTime!
 }
 
 """
@@ -17,25 +14,32 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type DiaryLike {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-type Comment {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
 type Diary {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  id: String!
+  account: String!
+  title: String!
+  contents: String!
+  comments: [Comment!]!
+  room: Room!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Room {
+  id: String!
+  name: String!
+  image: String!
+  userCount: Int!
+  hit: Int!
+  diaries: [Diary!]!
+  createAt: DateTime!
+  updateAt: DateTime!
 }
 
 type Query {
-  diaryLike(id: Int!): DiaryLike!
-  comment(id: Int!): Comment!
-  diary(id: Int!): Diary!
+  fetchComments: [Comment!]!
+  fetchDiary(id: String!): Diary!
+  fetchDiaries(room: String!): [Diary!]!
 }
 
 type Mutation {
@@ -44,15 +48,12 @@ type Mutation {
   createRoomJoinCode(adminRoomInput: AdminRoomInput!): String!
   updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room!
   deleteRoom(adminRoomInput: AdminRoomInput!): Boolean!
-  createDiaryLike(createDiaryLikeInput: CreateDiaryLikeInput!): DiaryLike!
-  updateDiaryLike(updateDiaryLikeInput: UpdateDiaryLikeInput!): DiaryLike!
-  removeDiaryLike(id: Int!): DiaryLike!
   createComment(createCommentInput: CreateCommentInput!): Comment!
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
-  removeComment(id: Int!): Comment!
+  deleteComment(id: Int!): Comment!
   createDiary(createDiaryInput: CreateDiaryInput!): Diary!
-  updateDiary(updateDiaryInput: UpdateDiaryInput!): Diary!
-  removeDiary(id: Int!): Diary!
+  updateDiary(updateDiaryInput: UpdateDiaryInput!): Diary
+  deleteDiary(deleteDiaryInput: DeleteDiaryInput!): Boolean!
 }
 
 input CreateRoomInput {
@@ -62,7 +63,7 @@ input CreateRoomInput {
 }
 
 input AdminRoomInput {
-  url: String!
+  id: String!
   adminPassword: String!
 }
 
@@ -73,35 +74,42 @@ input UpdateRoomInput {
   image: String
 }
 
-input CreateDiaryLikeInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateDiaryLikeInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
 input CreateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  room: String!
+  diary: String!
+  account: String!
+  password: String!
+  contents: String!
 }
 
 input UpdateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  room: String
+  diary: String
+  account: String
+  password: String
+  contents: String
   id: Int!
 }
 
 input CreateDiaryInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  account: String!
+  password: String!
+  title: String!
+  contents: String!
+  room: String!
 }
 
 input UpdateDiaryInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  account: String
+  password: String!
+  title: String
+  contents: String
+  room: String!
+  id: String!
+}
+
+input DeleteDiaryInput {
+  room: String!
+  id: String!
+  password: String!
 }

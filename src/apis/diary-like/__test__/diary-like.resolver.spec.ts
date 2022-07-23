@@ -1,8 +1,8 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { DiaryLikeResolver } from "../diary-like.resolver";
-import { DiaryLikeService } from "../diary-like.service";
+import { Test, TestingModule } from '@nestjs/testing';
+import { DiaryLikeResolver } from '../diary-like.resolver';
+import { DiaryLikeService } from '../diary-like.service';
 
-describe("DiaryLikeResolver", () => {
+describe('DiaryLikeResolver', () => {
   let resolver: DiaryLikeResolver;
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe("DiaryLikeResolver", () => {
     resolver = module.get<DiaryLikeResolver>(DiaryLikeResolver);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(resolver).toBeDefined();
   });
 });

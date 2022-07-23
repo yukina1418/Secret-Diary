@@ -1,35 +1,53 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { DiaryService } from './diary.service';
 import { Diary } from './entities/diary.entity';
 import { CreateDiaryInput } from './dto/create-diary.input';
 import { UpdateDiaryInput } from './dto/update-diary.input';
+import { DeleteDiaryInput } from './dto/delete-diary.input';
+import { UseGuards } from '@nestjs/common';
 
-@Resolver(() => Diary)
+@UseGuards()
+@Resolver()
 export class DiaryResolver {
   constructor(private readonly diaryService: DiaryService) {}
 
+  @Query(() => Diary)
+  fetchDiary(
+    //
+    @Args('id') id: string,
+  ): Promise<Diary> {
+    return this.diaryService.findOne({ id });
+  }
+
+  @Query(() => [Diary])
+  fetchDiaries(
+    //
+    @Args('room') room: string,
+  ): Promise<Diary[]> {
+    return this.diaryService.findAll({ room });
+  }
+
   @Mutation(() => Diary)
-  createDiary(@Args('createDiaryInput') createDiaryInput: CreateDiaryInput) {
+  createDiary(
+    //
+    @Args('createDiaryInput') createDiaryInput: CreateDiaryInput,
+  ): Promise<Diary> {
     return this.diaryService.create(createDiaryInput);
   }
 
-  @Query(() => [Diary], { name: 'diary' })
-  findAll() {
-    return this.diaryService.findAll();
+  @Mutation(() => Diary, { nullable: true })
+  updateDiary(
+    //
+    @Args('updateDiaryInput') updateDiaryInput: UpdateDiaryInput,
+  ): Promise<Diary> {
+    return this.diaryService.update(updateDiaryInput);
   }
 
-  @Query(() => Diary, { name: 'diary' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.diaryService.findOne(id);
-  }
-
-  @Mutation(() => Diary)
-  updateDiary(@Args('updateDiaryInput') updateDiaryInput: UpdateDiaryInput) {
-    return this.diaryService.update(updateDiaryInput.id, updateDiaryInput);
-  }
-
-  @Mutation(() => Diary)
-  removeDiary(@Args('id', { type: () => Int }) id: number) {
-    return this.diaryService.remove(id);
+  @Mutation(() => Boolean)
+  deleteDiary(
+    //
+    @Args('deleteDiaryInput') deleteDiaryInput: DeleteDiaryInput,
+  ): Promise<boolean> {
+    return this.diaryService.remove(deleteDiaryInput);
   }
 }

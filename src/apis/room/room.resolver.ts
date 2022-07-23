@@ -1,9 +1,9 @@
-import { Resolver, Query, Mutation, Args, Int } from "@nestjs/graphql";
-import { RoomService } from "./room.service";
-import { Room } from "./entities/room.entity";
-import { CreateRoomInput } from "./dto/create-room.intput";
-import { UpdateRoomInput } from "./dto/update-room.input";
-import { AdminRoomInput } from "./dto/admin-room.input";
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { RoomService } from './room.service';
+import { Room } from './entities/room.entity';
+import { CreateRoomInput } from './dto/create-room.intput';
+import { UpdateRoomInput } from './dto/update-room.input';
+import { AdminRoomInput } from './dto/admin-room.input';
 
 @Resolver(() => Room)
 export class RoomResolver {
@@ -12,8 +12,8 @@ export class RoomResolver {
   @Mutation(() => String)
   joinRoom(
     //
-    @Args("joinCode") joinCode: string,
-    @Args("password") password: string
+    @Args('joinCode') joinCode: string,
+    @Args('password') password: string,
   ) {
     return this.roomService.joinRoom({ joinCode, password });
   }
@@ -21,7 +21,7 @@ export class RoomResolver {
   @Mutation(() => Room)
   createRoom(
     //
-    @Args("createRoomInput") createRoomInput: CreateRoomInput
+    @Args('createRoomInput') createRoomInput: CreateRoomInput,
   ) {
     return this.roomService.create({ createRoomInput });
   }
@@ -29,15 +29,15 @@ export class RoomResolver {
   @Mutation(() => String)
   createRoomJoinCode(
     //
-    @Args("adminRoomInput") adminRoomInput: AdminRoomInput
+    @Args('adminRoomInput') adminRoomInput: AdminRoomInput,
   ) {
     return this.roomService.createJoinCode({ adminRoomInput });
   }
 
   @Mutation(() => Room)
   updateRoom(
-    @Args("adminRoomInput") adminRoomInput: AdminRoomInput,
-    @Args("updateRoomInput") updateRoomInput: UpdateRoomInput
+    @Args('adminRoomInput') adminRoomInput: AdminRoomInput,
+    @Args('updateRoomInput') updateRoomInput: UpdateRoomInput,
   ) {
     return this.roomService.update({ adminRoomInput, updateRoomInput });
   }
@@ -45,7 +45,7 @@ export class RoomResolver {
   @Mutation(() => Boolean)
   deleteRoom(
     //
-    @Args("adminRoomInput") adminRoomInput: AdminRoomInput
+    @Args('adminRoomInput') adminRoomInput: AdminRoomInput,
   ) {
     return this.roomService.delete({ adminRoomInput });
   }

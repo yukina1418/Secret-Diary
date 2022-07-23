@@ -1,15 +1,16 @@
 import {
+  BadRequestException,
   CACHE_MANAGER,
   Inject,
   Injectable,
   UnauthorizedException,
-} from "@nestjs/common";
-import { Cache } from "cache-manager";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Room } from "./entities/room.entity";
-import * as bcrypt from "bcrypt";
-import { random } from "src/commons/utilities/random";
+} from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Room } from './entities/room.entity';
+import * as bcrypt from 'bcrypt';
+import { random } from 'src/commons/utilities/random';
 
 @Injectable()
 export class RoomService {
@@ -17,7 +18,7 @@ export class RoomService {
     @InjectRepository(Room)
     private readonly roomRepository: Repository<Room>,
     @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache
+    private readonly cacheManager: Cache,
   ) {}
 
   // 에러핸들링 고민해보기, 실배포까지 갈꺼니까 더 고민하기
@@ -27,17 +28,29 @@ export class RoomService {
     try {
       // 검증단
       const result = await this.cacheManager.get(joinCode);
+      if (!result)
+        throw new UnauthorizedException(
+          '초대코드가 존재하지 않거나 만료되었습니다.',
+        );
+
       const isRoom = await this.roomRepository.findOne(result);
       const isPassword = bcrypt.compareSync(password, isRoom.password);
 
       if (!isPassword)
         throw new UnauthorizedException(
-          "초대코드가 존재하지 않거나 만료되었습니다."
+          '해당 룸 비밀번호와 일치하지 않습니다.',
         );
+
+      // 검증로직 추가해야함
+      // URL로 바로 못들어오게 혹은 들어온다면 비밀번호를 작성하는 창으로 보내야할듯
 
       return isRoom.id;
     } catch (e) {
       // 에러를 어떻게 예쁘게 처리하지
+      if (e.status === 401) {
+        throw e;
+      }
+      throw new BadRequestException('제대로 입력해라');
     }
   }
 
@@ -55,26 +68,35 @@ export class RoomService {
 
   // 초대코드 생성
   async createJoinCode({ adminRoomInput }) {
-    const { url, adminPassword } = adminRoomInput;
+    const { id, adminPassword } = adminRoomInput;
     try {
       // 검증단
-      const isRoom = await this.roomRepository.findOne({ where: { url } });
+
+      let uuid;
+
+      const isRoom = await this.roomRepository.findOne({ where: { id } });
       const isPassword = bcrypt.compareSync(
         adminPassword,
-        isRoom.adminPassword
+        isRoom.adminPassword,
       );
+
       if (!isPassword)
         throw new UnauthorizedException(
-          "룸이 존재하지 않거나, 관리자 비밀번호가 틀립니다."
+          '룸이 존재하지 않거나, 관리자 비밀번호가 틀립니다.',
         );
 
       // 8자리 난수 생성기
-      const uuid = random();
+      uuid = random();
+
+      //혹시나 중복 있을 수도 있으니 체크 있으면 새로 만들어
+      const isCode = await this.cacheManager.get(uuid);
+      if (isCode) uuid = random();
+
       await this.cacheManager.set(uuid, isRoom.id, { ttl: 302400 });
 
       return uuid;
     } catch (e) {
-      // 에러핸들링하기
+      throw new Error('RoomCode Create Syntax Error');
     }
   }
 
@@ -87,7 +109,7 @@ export class RoomService {
     });
     const isPassword = bcrypt.compareSync(
       adminRoomInput.adminPassword,
-      isRoom.adminPassword
+      isRoom.adminPassword,
     );
 
     if (isPassword) {
@@ -108,14 +130,18 @@ export class RoomService {
   // 룸 삭제
   async delete({ adminRoomInput }) {
     const { url, adminPassword } = adminRoomInput;
-    const isRoom = await this.roomRepository.findOne({ where: { id: url } });
-    const isPassword = bcrypt.compareSync(adminPassword, isRoom.adminPassword);
-
+    const isPassword = this.isAdmin({ url, adminPassword });
     if (isPassword) {
       await this.roomRepository.softDelete(url);
       return true;
     } else {
       return false;
     }
+  }
+
+  async isAdmin({ url, adminPassword }) {
+    const isRoom = await this.roomRepository.findOne({ where: { id: url } });
+    const isPassword = bcrypt.compareSync(adminPassword, isRoom.adminPassword);
+    return isPassword;
   }
 }
