@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CACHE_MANAGER,
   Inject,
   Injectable,
@@ -46,7 +47,10 @@ export class RoomService {
       return isRoom.id;
     } catch (e) {
       // 에러를 어떻게 예쁘게 처리하지
-      throw new Error('Room Join Syntax Error');
+      if (e.status === 401) {
+        throw e;
+      }
+      throw new BadRequestException('제대로 입력해라');
     }
   }
 
@@ -68,6 +72,8 @@ export class RoomService {
     try {
       // 검증단
 
+      let uuid;
+
       const isRoom = await this.roomRepository.findOne({ where: { id } });
       const isPassword = bcrypt.compareSync(
         adminPassword,
@@ -80,7 +86,12 @@ export class RoomService {
         );
 
       // 8자리 난수 생성기
-      const uuid = random();
+      uuid = random();
+
+      //혹시나 중복 있을 수도 있으니 체크 있으면 새로 만들어
+      const isCode = await this.cacheManager.get(uuid);
+      if (isCode) uuid = random();
+
       await this.cacheManager.set(uuid, isRoom.id, { ttl: 302400 });
 
       return uuid;

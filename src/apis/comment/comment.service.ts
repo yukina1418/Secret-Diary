@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCommentInput } from './dto/create-comment.input';
-import { UpdateCommentInput } from './dto/update-comment.input';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentService {
-  create(createCommentInput: CreateCommentInput) {
+  constructor(
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+  ) {}
+  create({ createCommentInput }) {
     return 'This action adds a new comment';
   }
 
@@ -16,7 +21,7 @@ export class CommentService {
     return `This action returns a #${id} comment`;
   }
 
-  update(id: number, updateCommentInput: UpdateCommentInput) {
+  update(id: number, updateCommentInput) {
     return `This action updates a #${id} comment`;
   }
 

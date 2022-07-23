@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 import { Room } from '../room/entities/room.entity';
 import { Diary } from './entities/diary.entity';
+import { CreateDiaryInput } from './dto/create-diary.input';
+import { UpdateDiaryInput } from './dto/update-diary.input';
+import { DeleteDiaryInput } from './dto/delete-diary.input';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -11,7 +14,7 @@ export class DiaryService {
     @InjectRepository(Diary)
     private readonly diaryRepository: Repository<Diary>,
   ) {}
-  async create({ createDiaryInput }) {
+  async create(createDiaryInput: CreateDiaryInput): Promise<Diary> {
     try {
       const { password, room, ...data } = createDiaryInput;
 
@@ -36,7 +39,7 @@ export class DiaryService {
     }
   }
 
-  async findAll({ room }) {
+  async findAll({ room }): Promise<Diary[]> {
     const diariesData = await getConnection()
       .createQueryBuilder()
       .select('diary')
@@ -46,12 +49,13 @@ export class DiaryService {
 
     //const diariesData = await this.diaryRepository.find({ where: { room } });
 
-    if (diariesData.length === 0) throw new Error('Diary Not Found');
+    if (diariesData.length === 0)
+      throw new BadRequestException('Diary Not Found');
 
     return diariesData;
   }
 
-  async findOne({ id }) {
+  async findOne({ id }): Promise<Diary> {
     const diaryData = await getConnection()
       .createQueryBuilder()
       .select('diary')
@@ -59,12 +63,12 @@ export class DiaryService {
       .where({ id })
       .getOne();
 
-    if (!diaryData) throw new Error('Diary Not Found');
+    if (!diaryData) throw new BadRequestException('Diary Not Found');
 
     return diaryData;
   }
 
-  async update({ updateDiaryInput }) {
+  async update(updateDiaryInput: UpdateDiaryInput): Promise<Diary> {
     const { id, password, room, ...data } = updateDiaryInput;
 
     const isDiary = await getConnection()
@@ -87,7 +91,7 @@ export class DiaryService {
     return diaryData;
   }
 
-  async remove({ deleteDiaryInput }) {
+  async remove(deleteDiaryInput: DeleteDiaryInput): Promise<boolean> {
     const { id, password, room } = deleteDiaryInput;
 
     const isDiary = await this.diaryRepository.findOne({
@@ -101,7 +105,7 @@ export class DiaryService {
 
     if (!isPassword) throw new Error('Diary Password Not Match');
 
-    await this.diaryRepository.softDelete({ id, room });
+    await this.diaryRepository.softDelete(isDiary);
 
     return true;
   }

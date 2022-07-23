@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Comment } from 'src/apis/comment/entities/comment.entity';
 import { Room } from 'src/apis/room/entities/room.entity';
 import {
   BaseEntity,
@@ -7,6 +8,7 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,7 +16,7 @@ import {
 @ObjectType()
 @Entity()
 export class Diary extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;
 
@@ -36,6 +38,10 @@ export class Diary extends BaseEntity {
   // @Column({ nullable: true })
   // @Field(() => String)
   // image?: string;
+
+  @OneToMany(() => Comment, (comment) => comment.diary)
+  @Field(() => [Comment])
+  comments: Comment[];
 
   @ManyToOne(() => Room, (room) => room.diaries)
   @Field(() => Room)
