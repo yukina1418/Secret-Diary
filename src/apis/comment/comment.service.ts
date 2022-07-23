@@ -49,19 +49,22 @@ export class CommentService {
     }
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  // 댓글 전부 불러오는 메소드
+  async findAll(diary: string): Promise<Comment[]> {
+    const commentsData = await getConnection()
+      .createQueryBuilder()
+      .select('comment')
+      .from(Comment, 'comment')
+      .where('comment.diary = :diary', { diary })
+      .getMany();
+
+    if (commentsData.length === 0)
+      throw new BadRequestException('Comment Not Found');
+
+    return commentsData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
-
-  update(id: number, updateCommentInput) {
-    return `This action updates a #${id} comment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  delete(id: string, password: string): Promise<boolean> {
+    return;
   }
 }

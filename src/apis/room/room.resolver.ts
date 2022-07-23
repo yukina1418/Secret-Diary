@@ -5,18 +5,18 @@ import { CreateRoomInput } from './dto/create-room.intput';
 import { UpdateRoomInput } from './dto/update-room.input';
 import { AdminRoomInput } from './dto/admin-room.input';
 
-@Resolver(() => Room)
+@Resolver()
 export class RoomResolver {
   constructor(private readonly roomService: RoomService) {}
 
-  @Query(() => Int)
+  @Query(() => Int, { nullable: true })
   fetchRoomCount() {
+    // 이거 너무 간단한가.. 고민을 좀 해보자
     return this.roomService.count();
   }
 
   @Mutation(() => String, { nullable: true })
   joinRoom(
-    //
     @Args('joinCode') joinCode: string,
     @Args('password') password: string,
   ): Promise<string> {
@@ -25,7 +25,6 @@ export class RoomResolver {
 
   @Mutation(() => Room, { nullable: true })
   createRoom(
-    //
     @Args('createRoomInput') createRoomInput: CreateRoomInput,
   ): Promise<Room> {
     return this.roomService.create(createRoomInput);
@@ -33,7 +32,6 @@ export class RoomResolver {
 
   @Mutation(() => String, { nullable: true })
   createRoomJoinCode(
-    //
     @Args('adminRoomInput') adminRoomInput: AdminRoomInput,
   ): Promise<string> {
     return this.roomService.createJoinCode(adminRoomInput);
