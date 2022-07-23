@@ -39,7 +39,7 @@ export class DiaryService {
     }
   }
 
-  async findAll({ room }): Promise<Diary[]> {
+  async findAll(room: string): Promise<Diary[]> {
     const diariesData = await getConnection()
       .createQueryBuilder()
       .select('diary')
@@ -55,7 +55,7 @@ export class DiaryService {
     return diariesData;
   }
 
-  async findOne({ id }): Promise<Diary> {
+  async findOne(id: string): Promise<Diary> {
     const diaryData = await getConnection()
       .createQueryBuilder()
       .select('diary')

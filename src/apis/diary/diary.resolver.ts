@@ -12,24 +12,17 @@ export class DiaryResolver {
   constructor(private readonly diaryService: DiaryService) {}
 
   @Query(() => Diary)
-  fetchDiary(
-    //
-    @Args('id') id: string,
-  ): Promise<Diary> {
-    return this.diaryService.findOne({ id });
+  fetchDiary(@Args('id') id: string): Promise<Diary> {
+    return this.diaryService.findOne(id);
   }
 
   @Query(() => [Diary])
-  fetchDiaries(
-    //
-    @Args('room') room: string,
-  ): Promise<Diary[]> {
-    return this.diaryService.findAll({ room });
+  fetchDiaries(@Args('room') room: string): Promise<Diary[]> {
+    return this.diaryService.findAll(room);
   }
 
-  @Mutation(() => Diary)
+  @Mutation(() => Diary, { nullable: true })
   createDiary(
-    //
     @Args('createDiaryInput') createDiaryInput: CreateDiaryInput,
   ): Promise<Diary> {
     return this.diaryService.create(createDiaryInput);
@@ -37,7 +30,6 @@ export class DiaryResolver {
 
   @Mutation(() => Diary, { nullable: true })
   updateDiary(
-    //
     @Args('updateDiaryInput') updateDiaryInput: UpdateDiaryInput,
   ): Promise<Diary> {
     return this.diaryService.update(updateDiaryInput);
@@ -45,7 +37,6 @@ export class DiaryResolver {
 
   @Mutation(() => Boolean)
   deleteDiary(
-    //
     @Args('deleteDiaryInput') deleteDiaryInput: DeleteDiaryInput,
   ): Promise<boolean> {
     return this.diaryService.remove(deleteDiaryInput);

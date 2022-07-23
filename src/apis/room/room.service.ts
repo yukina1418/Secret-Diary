@@ -8,9 +8,13 @@ import {
 import { Cache } from 'cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Room } from './entities/room.entity';
 import * as bcrypt from 'bcrypt';
 import { random } from 'src/commons/utilities/random';
+
+import { Room } from './entities/room.entity';
+import { CreateRoomInput } from './dto/create-room.intput';
+import { UpdateRoomInput } from './dto/update-room.input';
+import { AdminRoomInput } from './dto/admin-room.input';
 
 @Injectable()
 export class RoomService {
@@ -24,7 +28,7 @@ export class RoomService {
   // 에러핸들링 고민해보기, 실배포까지 갈꺼니까 더 고민하기
 
   // 룸 참가
-  async joinRoom({ joinCode, password }) {
+  async joinRoom(joinCode: string, password: string): Promise<string> {
     try {
       // 검증단
       const result = await this.cacheManager.get(joinCode);
@@ -55,7 +59,7 @@ export class RoomService {
   }
 
   // 룸 생성
-  async create({ createRoomInput }) {
+  async create(createRoomInput: CreateRoomInput): Promise<Room> {
     const { name, password, adminPassword } = createRoomInput;
 
     // 저장
@@ -67,7 +71,7 @@ export class RoomService {
   }
 
   // 초대코드 생성
-  async createJoinCode({ adminRoomInput }) {
+  async createJoinCode(adminRoomInput: AdminRoomInput): Promise<string> {
     const { id, adminPassword } = adminRoomInput;
     try {
       // 검증단
@@ -96,16 +100,22 @@ export class RoomService {
 
       return uuid;
     } catch (e) {
+      if (e.status === 401) {
+        return e;
+      }
       throw new Error('RoomCode Create Syntax Error');
     }
   }
 
   // 룸 업데이트
-  async update({ adminRoomInput, updateRoomInput }) {
+  async update(
+    adminRoomInput: AdminRoomInput,
+    updateRoomInput: UpdateRoomInput,
+  ): Promise<Room | boolean> {
     const { name, password, adminPassword, image } = updateRoomInput;
 
     const isRoom = await this.roomRepository.findOne({
-      where: { id: adminRoomInput.url },
+      where: { id: adminRoomInput.id },
     });
     const isPassword = bcrypt.compareSync(
       adminRoomInput.adminPassword,
@@ -114,33 +124,32 @@ export class RoomService {
 
     if (isPassword) {
       // 특정 값이 들어오지 않을 경우 어떻게 해야하는지 에러핸들링 확인해보기
-      await this.roomRepository.save({
+      return await this.roomRepository.save({
         ...isRoom,
         name,
         password: bcrypt?.hashSync(password, 10),
         adminPassword: bcrypt?.hashSync(adminPassword, 10),
         image,
       });
-      return true;
     } else {
       return false;
     }
   }
 
   // 룸 삭제
-  async delete({ adminRoomInput }) {
-    const { url, adminPassword } = adminRoomInput;
-    const isPassword = this.isAdmin({ url, adminPassword });
+  async delete(adminRoomInput: AdminRoomInput): Promise<boolean> {
+    const { id, adminPassword } = adminRoomInput;
+    const isPassword = this.isAdmin(id, adminPassword);
     if (isPassword) {
-      await this.roomRepository.softDelete(url);
+      await this.roomRepository.softDelete(id);
       return true;
     } else {
       return false;
     }
   }
 
-  async isAdmin({ url, adminPassword }) {
-    const isRoom = await this.roomRepository.findOne({ where: { id: url } });
+  async isAdmin(id: string, adminPassword: string): Promise<boolean> {
+    const isRoom = await this.roomRepository.findOne({ where: { id } });
     const isPassword = bcrypt.compareSync(adminPassword, isRoom.adminPassword);
     return isPassword;
   }
