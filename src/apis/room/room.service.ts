@@ -28,14 +28,14 @@ export class RoomService {
 
   // 에러핸들링 고민해보기, 실배포까지 갈꺼니까 더 고민하기
 
-  // 룸 카운트 세주는 메소드//////////////////////////////////////////////////////////////////////////////////////////////
+  // 룸 카운트 세주는 API//////////////////////////////////////////////////////////////////////////////////////////////
   async count() {
     // 얘도 뭔가 더 필요한게 없을지 고민하기.
-    // 메인페이지에서 현재 x개의 일기장이 생성되었습니다! 같은 것을 위한 메소드
+    // 메인페이지에서 현재 x개의 일기장이 생성되었습니다! 같은 것을 위한 API
     return await this.roomRepository.count();
   }
 
-  // 룸 참가 메소드////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 룸 참가 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async joinRoom(joinCode: string, password: string): Promise<string> {
     try {
       // 레디스에 생성코드 존재여부 확인
@@ -60,9 +60,11 @@ export class RoomService {
     }
   }
 
-  // 룸 생성 메소드////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 룸 생성 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async create(createRoomInput: CreateRoomInput): Promise<Room> {
-    const { name, password, adminPassword } = createRoomInput;
+    const { name, password, adminPassword, email } = createRoomInput;
+
+    console.log(email);
     try {
       // 비밀번호 두개가 동일한 것은 보안적으로 위험해서 에러 발생
       if (password === adminPassword) {
@@ -86,7 +88,7 @@ export class RoomService {
     }
   }
 
-  // 초대코드 생성 메소드////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 초대코드 생성 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async createJoinCode(adminRoomInput: AdminRoomInput): Promise<string> {
     const { id, adminPassword } = adminRoomInput;
 
@@ -113,7 +115,7 @@ export class RoomService {
     }
   }
 
-  // 룸 업데이트 메소드////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 룸 업데이트 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async update(
     adminRoomInput: AdminRoomInput,
     updateRoomInput: UpdateRoomInput,
@@ -142,7 +144,7 @@ export class RoomService {
     }
   }
 
-  // 룸 삭제 메소드////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 룸 삭제 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async delete(adminRoomInput: AdminRoomInput): Promise<boolean> {
     const { id, adminPassword } = adminRoomInput;
 
@@ -158,7 +160,7 @@ export class RoomService {
     // 이 부분은 고도화가 필요할 것 같은데, 고민을 좀 해봐야할 것 같다.
   }
 
-  // 룸 여부 검증 및 접근 권한 여부 확인 메소드////////////////////////////////////////////////////////////////////////////////////////////////////
+  // 룸 여부 검증 및 접근 권한 여부 확인 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async isRoomCheck(
     id: string,
     password?: string,
@@ -197,13 +199,13 @@ export class RoomService {
       throw new Error('Room Check Server Error');
     }
 
-    // 해당 메소드가 엄청 불편하게 이상하게 작성되어있는 것 같다.
+    // 해당 API가 엄청 불편하게 이상하게 작성되어있는 것 같다.
     // 인자가 없을 경우 어떻게 해야할지 모르겠어서 애초에 입력 값에 공백을 넣어놓고
-    // 해당 메소드의 조건문에서 공백이 아닐 경우로 체크를 하고 있는데, 조금 더 찾아봐야할 것 같다.
+    // 해당 API의 조건문에서 공백이 아닐 경우로 체크를 하고 있는데, 조금 더 찾아봐야할 것 같다.
   }
 }
 
-// 관리자 검증 메소드
+// 관리자 검증 API
 // async isAdmin(id: string, adminPassword: string): Promise<boolean> {
 //   const isRoom = await this.roomRepository.findOne({ where: { id } });
 //   const isPassword = bcrypt.compareSync(adminPassword, isRoom.adminPassword);

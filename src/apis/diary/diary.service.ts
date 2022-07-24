@@ -19,7 +19,7 @@ export class DiaryService {
     private readonly diaryRepository: Repository<Diary>,
   ) {}
 
-  // 다이어리 생성 메소드//////////////////////////////
+  // 다이어리 생성 API//////////////////////////////
   async create(createDiaryInput: CreateDiaryInput): Promise<Diary> {
     const { password, room, ...data } = createDiaryInput;
 
@@ -33,7 +33,7 @@ export class DiaryService {
 
     try {
       // 룸 없으면 400에러
-      if (!roomData) throw new BadRequestException('Room Not Found');
+      if (!roomData) throw new BadRequestException('방이 존재하지 않습니다.');
 
       // 있으면 룸 정보를 FK로 저장
       const diary = this.diaryRepository.save({
@@ -52,7 +52,7 @@ export class DiaryService {
     }
   }
 
-  // 룸에 관련된 다이어리를 전부 다 가져오는 메소드//////////////////////////////
+  // 룸에 관련된 다이어리를 전부 다 가져오는 API//////////////////////////////
   async findAll(room: string): Promise<Diary[]> {
     // 정렬해서 가져오기
     const diariesData = await getConnection()
@@ -65,12 +65,12 @@ export class DiaryService {
 
     // 가져왔는데 배열이 비어있다면 400에러
     if (diariesData.length === 0)
-      throw new BadRequestException('Diary Not Found');
+      throw new BadRequestException('다이어리가 존재하지 않습니다.');
 
     return diariesData;
   }
 
-  // 다이어리 한 개만 찾아오는 메소드//////////////////////////////
+  // 다이어리 한 개만 찾아오는 API//////////////////////////////
   async findOne(id: string): Promise<Diary> {
     const diaryData = await getConnection()
       .createQueryBuilder()
@@ -81,12 +81,12 @@ export class DiaryService {
 
     // 다이어리가 없으면 400 에러
     if (diaryData === undefined)
-      throw new BadRequestException('Diary Not Found');
+      throw new BadRequestException('다이어리가 존재하지 않습니다.');
 
     return diaryData;
   }
 
-  // 다이어리 업데이트 메소드//////////////////////////////
+  // 다이어리 업데이트 API//////////////////////////////
   async update(updateDiaryInput: UpdateDiaryInput): Promise<Diary> {
     const { id, password, room, ...data } = updateDiaryInput;
 
@@ -103,13 +103,13 @@ export class DiaryService {
     try {
       // 다이어리가 없으면 400에러
       if (isDiary === undefined)
-        throw new BadRequestException('Diary Id Not Found');
+        throw new BadRequestException('다이어리가 존재하지 않습니다.');
 
       const isPassword = bcrypt.compareSync(password, isDiary.password);
 
       // 비밀번호가 틀리면 401에러
       if (!isPassword)
-        throw new UnauthorizedException('Diary Password Not Match');
+        throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
       const diaryData = await this.diaryRepository.save({
         ...isDiary,
@@ -126,7 +126,7 @@ export class DiaryService {
     }
   }
 
-  // 다이어리 삭제 메소드///////
+  // 다이어리 삭제 API///////
   async delete(deleteDiaryInput: DeleteDiaryInput): Promise<boolean> {
     const { id, password, room } = deleteDiaryInput;
 
@@ -139,13 +139,13 @@ export class DiaryService {
     try {
       // 다이어리가 없으면 400에러
       if (isDiary === undefined)
-        throw new BadRequestException('Diary Id Not Found');
+        throw new BadRequestException('다이어리가 존재하지 않습니다.');
 
       const isPassword = bcrypt.compareSync(password, isDiary.password);
 
       // 비밀번호가 틀리면 401에러
       if (!isPassword)
-        throw new UnauthorizedException('Diary Password Not Match');
+        throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
       await this.diaryRepository.softDelete(isDiary);
       return true;

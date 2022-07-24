@@ -51,6 +51,7 @@ type Mutation {
   updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room
   deleteRoom(adminRoomInput: AdminRoomInput!): Boolean
   createComment(createCommentInput: CreateCommentInput!): Comment
+  updateComment(updateCommentInput: UpdateCommentInput!): Comment
   createDiary(account: String!, password: String!, title: String!, contents: String!, room: String!): Diary
   updateDiary(account: String, password: String!, title: String, contents: String, room: String!, id: String!): Diary
   deleteDiary(room: String!, id: String!, password: String!): Boolean
@@ -59,6 +60,7 @@ type Mutation {
 input CreateRoomInput {
   name: String!
   password: String!
+  email: String!
   adminPassword: String!
 }
 
@@ -78,6 +80,12 @@ input CreateCommentInput {
   room: String!
   diary: String!
   account: String!
+  password: String!
+  contents: String!
+}
+
+input UpdateCommentInput {
+  id: String!
   password: String!
   contents: String!
 }
