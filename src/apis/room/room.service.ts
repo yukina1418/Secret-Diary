@@ -62,9 +62,8 @@ export class RoomService {
 
   // 룸 생성 API////////////////////////////////////////////////////////////////////////////////////////////////////
   async create(createRoomInput: CreateRoomInput): Promise<Room> {
-    const { name, password, adminPassword, email } = createRoomInput;
+    const { name, password, adminPassword } = createRoomInput;
 
-    console.log(email);
     try {
       // 비밀번호 두개가 동일한 것은 보안적으로 위험해서 에러 발생
       if (password === adminPassword) {
@@ -167,29 +166,29 @@ export class RoomService {
     adminPassword?: string,
   ): Promise<Room> {
     // 룸 여부 검증
-    const isRoom = await this.roomRepository.findOne({
+    const roomData = await this.roomRepository.findOne({
       where: { id },
     });
 
     try {
       // 없으면 400 에러
-      if (isRoom === undefined)
+      if (roomData === undefined)
         throw new NotFoundException('룸이 존재하지 않습니다.');
 
       if (adminPassword !== '') {
         const isPassword = bcrypt.compareSync(
           adminPassword,
-          isRoom.adminPassword,
+          roomData.adminPassword,
         );
 
-        if (isPassword) return isRoom;
+        if (isPassword) return roomData;
         throw new UnauthorizedException('관리자 비밀번호가 틀립니다.');
       }
 
       if (password !== '') {
-        const isPassword = bcrypt.compareSync(password, isRoom.password);
+        const isPassword = bcrypt.compareSync(password, roomData.password);
 
-        if (isPassword) return isRoom;
+        if (isPassword) return roomData;
         throw new UnauthorizedException('비밀번호가 틀립니다.');
       }
     } catch (e) {

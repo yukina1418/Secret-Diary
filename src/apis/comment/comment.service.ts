@@ -11,6 +11,7 @@ import { Diary } from '../diary/entities/diary.entity';
 import { CreateCommentInput } from './dto/create-comment.input';
 import { UpdateCommentInput } from './dto/update-comment.input';
 import { Comment } from './entities/comment.entity';
+import { DeleteCommentInput } from './dto/delete-comment.input';
 
 @Injectable()
 export class CommentService {
@@ -96,7 +97,30 @@ export class CommentService {
     }
   }
 
-  delete(id: string, password: string): Promise<boolean> {
-    return;
+  // 댓글 삭제 API
+  async delete(deleteCommentInput: DeleteCommentInput): Promise<boolean> {
+    const { id, password } = deleteCommentInput;
+    const commentData = await getConnection()
+      .createQueryBuilder()
+      .select('comment')
+      .from(Comment, 'comment')
+      .where('comment.id = :id', { id })
+      .getOne();
+
+    try {
+      if (commentData === undefined)
+        throw new NotFoundException('댓글이 존재하지 않습니다.');
+
+      const isPassword = bcrypt.compareSync(password, commentData.password);
+
+      if (!isPassword)
+        throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+
+      await this.commentRepository.softDelete(commentData);
+
+      return true;
+    } catch (e) {
+      throw new Error('Comment Delete Server Error');
+    }
   }
 }

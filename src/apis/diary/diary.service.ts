@@ -36,13 +36,11 @@ export class DiaryService {
       if (!roomData) throw new BadRequestException('방이 존재하지 않습니다.');
 
       // 있으면 룸 정보를 FK로 저장
-      const diary = this.diaryRepository.save({
+      return await this.diaryRepository.save({
         ...data,
         room: roomData,
         password: bcrypt.hashSync(password, 10),
       });
-
-      return diary;
     } catch (e) {
       if (e.status === 400) {
         return e;
@@ -91,7 +89,7 @@ export class DiaryService {
     const { id, password, room, ...data } = updateDiaryInput;
 
     // 다이어리 정보 검증
-    const isDiary = await getConnection()
+    const diaryData = await getConnection()
       .createQueryBuilder()
       .select('diary')
       .from(Diary, 'diary')
@@ -102,21 +100,19 @@ export class DiaryService {
 
     try {
       // 다이어리가 없으면 400에러
-      if (isDiary === undefined)
+      if (diaryData === undefined)
         throw new BadRequestException('다이어리가 존재하지 않습니다.');
 
-      const isPassword = bcrypt.compareSync(password, isDiary.password);
+      const isPassword = bcrypt.compareSync(password, diaryData.password);
 
       // 비밀번호가 틀리면 401에러
       if (!isPassword)
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
-      const diaryData = await this.diaryRepository.save({
-        ...isDiary,
+      return await this.diaryRepository.save({
+        ...diaryData,
         ...data,
       });
-
-      return diaryData;
     } catch (e) {
       if (e.status === 400 || e.status === 401) {
         return e;
@@ -131,23 +127,23 @@ export class DiaryService {
     const { id, password, room } = deleteDiaryInput;
 
     // 1+n 문제를 막기 위한 relations 옵션으로 찾아오기
-    const isDiary = await this.diaryRepository.findOne({
+    const diaryData = await this.diaryRepository.findOne({
       where: { id, room },
       relations: ['room'],
     });
 
     try {
       // 다이어리가 없으면 400에러
-      if (isDiary === undefined)
+      if (diaryData === undefined)
         throw new BadRequestException('다이어리가 존재하지 않습니다.');
 
-      const isPassword = bcrypt.compareSync(password, isDiary.password);
+      const isPassword = bcrypt.compareSync(password, diaryData.password);
 
       // 비밀번호가 틀리면 401에러
       if (!isPassword)
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
-      await this.diaryRepository.softDelete(isDiary);
+      await this.diaryRepository.softDelete(diaryData);
       return true;
     } catch (e) {
       if (e.status === 400 || e.status === 401) {
