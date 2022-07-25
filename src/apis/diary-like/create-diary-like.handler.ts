@@ -1,20 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 import { Diary } from '../diary/entities/diary.entity';
-import { CreateDiaryLikeInput } from './dto/create-diary-like.input';
-import { UpdateDiaryLikeInput } from './dto/update-diary-like.input';
+import { CreateDiaryLikeCommand } from './command/create-diary-like.command';
 import { DiaryLike } from './entities/diary-like.entity';
 
 @Injectable()
-export class DiaryLikeService {
+@CommandHandler(CreateDiaryLikeCommand)
+export class CreateDiaryLikeCommandHandler
+  implements ICommandHandler<CreateDiaryLikeCommand>
+{
   constructor(
     @InjectRepository(DiaryLike)
     private readonly diaryLikeRepository: Repository<DiaryLike>,
   ) {}
 
-  async create(createDiaryLikeInput: CreateDiaryLikeInput): Promise<Diary> {
-    const { data, diary } = createDiaryLikeInput;
+  async execute(command: CreateDiaryLikeCommand) {
+    const { data, diary } = command;
 
     const diaryData = await getConnection()
       .createQueryBuilder()

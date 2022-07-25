@@ -24,7 +24,7 @@ import { graphqlUploadExpress } from 'graphql-upload';
 @Module({
   imports: [
     RoomModule,
-    // DiaryLikeModule,
+    DiaryLikeModule,
     CommentModule,
     DiaryModule,
     ConfigModule.forRoot({ isGlobal: true }),

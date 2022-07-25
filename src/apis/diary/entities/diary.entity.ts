@@ -1,5 +1,6 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Comment } from 'src/apis/comment/entities/comment.entity';
+import { DiaryLike } from 'src/apis/diary-like/entities/diary-like.entity';
 import { Room } from 'src/apis/room/entities/room.entity';
 import {
   BaseEntity,
@@ -34,6 +35,10 @@ export class Diary extends BaseEntity {
   @Column({ type: 'text' })
   @Field(() => String)
   contents: string;
+
+  @Column({ default: 0 })
+  @Field(() => Int)
+  likeCount: number;
 
   // @Column({ nullable: true })
   // @Field(() => String)

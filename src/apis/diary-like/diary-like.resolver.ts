@@ -1,35 +1,28 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { DiaryLikeService } from './diary-like.service';
-import { DiaryLike } from './entities/diary-like.entity';
 import { CreateDiaryLikeInput } from './dto/create-diary-like.input';
-import { UpdateDiaryLikeInput } from './dto/update-diary-like.input';
+import { Diary } from '../diary/entities/diary.entity';
+import { CreateDiaryLikeCommand } from './command/create-diary-like.command';
+import { CommandBus } from '@nestjs/cqrs';
 
-@Resolver(() => DiaryLike)
+@Resolver()
 export class DiaryLikeResolver {
-  constructor(private readonly diaryLikeService: DiaryLikeService) {}
+  constructor(
+    private readonly diaryLikeService: DiaryLikeService,
+    private commandBus: CommandBus,
+  ) {}
 
-  @Mutation(() => DiaryLike)
-  createDiaryLike(@Args('createDiaryLikeInput') createDiaryLikeInput: CreateDiaryLikeInput) {
-    return this.diaryLikeService.create(createDiaryLikeInput);
-  }
+  // 이게 좋은지는 좀 알아봐야할 것 같다.
+  @Mutation(() => Diary)
+  createDiaryLike(
+    @Args('createDiaryLikeInput') createDiaryLikeInput: CreateDiaryLikeInput,
+  ): Promise<Diary> {
+    const { data, diary } = createDiaryLikeInput;
 
-  @Query(() => [DiaryLike], { name: 'diaryLike' })
-  findAll() {
-    return this.diaryLikeService.findAll();
-  }
+    const command = new CreateDiaryLikeCommand(data, diary);
 
-  @Query(() => DiaryLike, { name: 'diaryLike' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.diaryLikeService.findOne(id);
-  }
+    return this.commandBus.execute(command);
 
-  @Mutation(() => DiaryLike)
-  updateDiaryLike(@Args('updateDiaryLikeInput') updateDiaryLikeInput: UpdateDiaryLikeInput) {
-    return this.diaryLikeService.update(updateDiaryLikeInput.id, updateDiaryLikeInput);
-  }
-
-  @Mutation(() => DiaryLike)
-  removeDiaryLike(@Args('id', { type: () => Int }) id: number) {
-    return this.diaryLikeService.remove(id);
+    //    return this.diaryLikeService.create(createDiaryLikeInput);
   }
 }

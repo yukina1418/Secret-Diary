@@ -20,6 +20,7 @@ type Diary {
   account: String!
   title: String!
   contents: String!
+  likeCount: Int!
   comments: [Comment!]!
   room: Room!
   createAt: DateTime!
@@ -50,8 +51,10 @@ type Mutation {
   createRoomJoinCode(adminRoomInput: AdminRoomInput!): String
   updateRoom(adminRoomInput: AdminRoomInput!, updateRoomInput: UpdateRoomInput!): Room
   deleteRoom(adminRoomInput: AdminRoomInput!): Boolean
+  createDiaryLike(createDiaryLikeInput: CreateDiaryLikeInput!): Diary!
   createComment(createCommentInput: CreateCommentInput!): Comment
   updateComment(updateCommentInput: UpdateCommentInput!): Comment
+  deleteComment(deleteCommentInput: DeleteCommentInput!): Boolean
   createDiary(account: String!, password: String!, title: String!, contents: String!, room: String!): Diary
   updateDiary(account: String, password: String!, title: String, contents: String, room: String!, id: String!): Diary
   deleteDiary(room: String!, id: String!, password: String!): Boolean
@@ -60,7 +63,6 @@ type Mutation {
 input CreateRoomInput {
   name: String!
   password: String!
-  email: String!
   adminPassword: String!
 }
 
@@ -76,6 +78,11 @@ input UpdateRoomInput {
   image: String
 }
 
+input CreateDiaryLikeInput {
+  data: String!
+  diary: String!
+}
+
 input CreateCommentInput {
   room: String!
   diary: String!
@@ -88,4 +95,9 @@ input UpdateCommentInput {
   id: String!
   password: String!
   contents: String!
+}
+
+input DeleteCommentInput {
+  id: String!
+  password: String!
 }
